@@ -20,8 +20,6 @@ var current_direction = 0 //0: West 1:North, 2: East, 3:South
 var a = 0
 var b = 0
 var gridWidth = 20.0f
-var x0: ArrayList<Int> = arrayListOf()
-var y0: ArrayList<Int> = arrayListOf()
 var step by mutableStateOf(0)
 var isInitOK = false
 
@@ -41,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        thisTimer.scheduleAtFixedRate(thisTask, 100, 40)
+        thisTimer.scheduleAtFixedRate(thisTask, 100, 30)
         setContent {
             AntComposeTheme {
                 Init()
@@ -49,13 +47,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         stopDrawTimer()
         exitProcess(0)
     }
-
-
 }
 
 fun doTask() {
@@ -67,20 +64,10 @@ fun doTask() {
     //若蚂蚁在白格，左转90度，将该格改为黑格，向前移一步。
     if (arr[currentX][currentY] == 0) {
         direction = 1
-        x0.add(currentX)
-        y0.add(currentY)
         arr[currentX][currentY] = 1
     } else {
-        arr[currentX][currentY] = 0
-        for (i in 0 until x0.size) {
-            if (x0[i] == currentX && y0[i] == currentY) {
-                x0.removeAt(i)
-                y0.removeAt(i)
-                break
-            }
-        }
-
         direction = -1
+        arr[currentX][currentY] = 0
     }
     getNextPos()
 }
@@ -101,11 +88,22 @@ fun getNextPos() {
     }
     if (currentX < 0 || currentX >= a) {
         isInitOK = false
-        stopDrawTimer()
+        if (thisTask == null) {
+            return
+        } else {
+            stopDrawTimer()
+        }
     }
     if (currentY < 0 || currentY >= b) {
         isInitOK = false
-        stopDrawTimer()
+        if (thisTask == null) {
+            return
+        } else {
+            stopDrawTimer()
+        }
+    }
+    if (thisTask == null) {
+        doTask()
     }
 }
 
